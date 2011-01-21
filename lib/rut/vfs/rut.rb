@@ -9,7 +9,7 @@ module Rut::VFS::Rut
     raise Rut::NotSupportedError, 'Info not supported'
   end
 
-  def copy(destination, flags)
+  def copy(destination, flags = Rut::Copy::None)
     if flags & Rut::Copy::DoNotFollowSymlinks and info.symlink?
       destination.make_symlink info.target
     elsif info.special?
@@ -22,6 +22,20 @@ module Rut::VFS::Rut
 
   def read
     raise Rut::NotSupportedError, 'Read not supported'
+  end
+
+  def replace(etag = nil, backup = false, flags = Rut::Create::None)
+    raise Rut::NotSupportedError, 'Replace not supported'
+  end
+
+  def delete_if_exists
+    delete
+  rescue Rut::NotFoundError
+  end
+
+  def try_delete
+    delete
+  rescue Rut::Error
   end
 
   def make_symlink(target)

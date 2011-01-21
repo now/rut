@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-class Rut::Stream::Inputs::Files::Local
-  include Rut::Stream::Inputs::File
+class Rut::Streams::Inputs::Files::Local
+  include Rut::Streams::Inputs::File
 
   def initialize(io)
     super()
@@ -17,14 +17,11 @@ private
   end
 
   def super_read(bytes)
-    loop do
-      begin
-        return @io.sysread(bytes)
-      rescue EOFError
-        return ''
-      rescue Errno::EINTR
-      end
-    end
+    @io.sysread(bytes)
+  rescue EOFError
+    ''
+  rescue Errno::EINTR
+    retry
   rescue SystemCallError => e
     raise Rut::Error.from(e, 'Error reading from file: %s')
   end

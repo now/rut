@@ -59,13 +59,7 @@ end
 class Rut::PermissionDeniedError < Rut::Error
   include Rut::Error::Path
 
-  system :EACCES
-end
-
-class Rut::PermissionDeniedError < Rut::Error
-  include Rut::Error::Path
-
-  system :EACCES, Errno::EPERM
+  system :EACCES, :EPERM
 end
 
 class Rut::NameTooLongError < Rut::Error

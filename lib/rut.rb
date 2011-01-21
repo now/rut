@@ -2,36 +2,33 @@
 
 class Rut
   autoload :Copy, 'rut/copy'
+  autoload :Create, 'rut/create'
   autoload :Info, 'rut/info'
+  autoload :OS, 'rut/os'
   autoload :Stream, 'rut/stream'
+  autoload :Streams, 'rut/streams'
   autoload :VFS, 'rut/vfs'
 
   class << self
     def new_for_path(path)
-      new(path)
+      (windows? ?
+        VFS::Local::Windows::Rut :
+        VFS::Local::POSIX::Rut).new(path)
     end
-
-  private
 
     def windows?
       Config::CONFIG['target_os'] == 'mingw32'
     end
-  end
 
-  def initialize(path)
-    @path = self.class.canonicalize(path)
-  end
+  private
 
-  attr_reader :path
-
-  def basename
-    self.class.basename(path)
-  end
-
-  def parent
-    root, path = self.class.split_root(path)
-    return nil unless root
-    self.class.dirname(path)
+    def def_enum(enum, *names)
+      modul = const_set(enum, Module.new)
+      names.each_with_index do |name, index|
+        modul.const_set name, 1 << index - 1
+      end
+      modul
+    end
   end
 
   require 'rut/error'
