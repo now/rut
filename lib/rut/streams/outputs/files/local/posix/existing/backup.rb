@@ -7,11 +7,13 @@ module Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup
     end
 
     def create(actual)
-      rut(actual.rut).tap{  |rut|
+      rut(actual.rut).tap{ |rut|
         backup rut, actual.io, actual.stat
         restore actual.io
       }
     end
+
+  private
 
     def backup(rut, input, stat)
       rut.delete_if_exists

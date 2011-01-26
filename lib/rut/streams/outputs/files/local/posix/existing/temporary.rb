@@ -1,37 +1,46 @@
 # -*- coding: utf-8 -*-
 
 class Rut::Streams::Outputs::Files::Local::POSIX::Existing::Temporary
+  include Rut::Streams::Outputs::Files::Local::POSIX::Instance
+  include Instance
+
   class << self
-    def try_create(actual, flags, readable)
+    def try_to_create(actual, readable, backup, flags)
       return nil unless flags & Rut::Create::ReplaceDestination or (actual.stat.nlink < 2 and not actual.symlink?)
-      new(actual.rut, flags, readable, actual.stat).tap{ actual.close }
+      new(actual.rut, readable, backup, flags, actual.stat).tap{ actual.try_simple_close }
     rescue Rut::Error
       nil
     end
   end
 
-  def initialize(rut, flags, readable, stat)
-    @flags, @readable, @stat = flags, readable, stat
-    @io, @rut = Open.new(rut.parent/'.rutoutput-XXXXXX', readable, flags).call
+  def initialize(rut, flags, readable, backup, flags, stat)
+    @actual = rut
+    @backup = backup ? Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup.rut(actual) : nil
+    @io, @rut = Open.open(@actual.parent/'.rutoutput-XXXXXX', readable, flags)
     set_owner_and_permissions flags, stat
   rescue SystemCallError, Rut::Error => e
-    begin @io.close rescue SystemCallError end if defined? @io
-    @rut.try_delete if defined? @rut
+    try_simple_close
+    @rut.try_to_delete if defined? @rut
     raise Rut::Error.from(e, 'Error creating temporary file: %s')
   end
 
-  attr_reader :io, :rut
+  # TODO: super must come before the rearrangement.
+  def close
+    rearrange_actual_and_temporary
+    super
+  end
 
 private
 
-  autoload :Open, 'rut/streams/outputs/files/local/posix/existing/actual'
+  autoload :Instance, 'rut/streams/outputs/files/local/posix/existing/temporary/instance'
+  autoload :Open, 'rut/streams/outputs/files/local/posix/existing/temporary/open'
 
   def set_owner_and_permissions(flags, stat)
     return if flags & Rut::Create::ReplaceDestination
     io.chown stat.uid, stat.gid
     io.chmod stat.mode
   rescue SystemCallError => e
-    raise unless already_has_same_owner_and_permissions?(stat)
+    raise unless already_has_same_owner_and_permissions? stat
   end
 
   def already_has_same_owner_and_permissions?(b)

@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 
 class Rut::Streams::Outputs::Files::Local::POSIX::Existing::Temporary::Open
+  class << self
+    def open(rut, readable, flags)
+      new(rut, readable, flags).call
+    end
+  end
+
   def initialize(rut, readable, flags)
     @readable, @flags = readable, flags
     offset = rut.path.rindex(Pattern) or
       raise ArgumentError, 'template does not contain %s: %s' % [Pattern, rut.path]
-    @before = path[0...offset]
-    @after = path[offset+Pattern.length..-1]
+    @before = rut.path[0...offset]
+    @after = rut.path[offset+Pattern.length..-1]
   end
 
   def call

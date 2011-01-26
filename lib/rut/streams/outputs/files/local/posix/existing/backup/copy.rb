@@ -3,7 +3,7 @@
 class Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup::Copy
   def initialize(input, output)
     @input, @output = input, output
-    read_loop String.new('*' * BufferSize)
+    read_loop '*' * BufferSize
   end
 
 private
@@ -17,7 +17,7 @@ private
   end
 
   def read(buffer)
-    @input.sysread(BufferSize, buffer)
+    @input.sysread BufferSize, buffer
     buffer.length
   rescue Errno::EINTR
     retry

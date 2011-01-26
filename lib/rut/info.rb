@@ -6,6 +6,11 @@ class Rut::Info
       new_for_path(rut.path)
     end
 
+    def etag(stat)
+      times = stat.mtime
+      '%lu:%lu' % [time.sec, time.usec]
+    end
+
   private
 
     def new_for_path(path)
@@ -29,5 +34,9 @@ class Rut::Info
 
   def special?
     stat.chardev? or stat.blockdev? or stat.pipe? or stat.socket?
+  end
+
+  def etag
+    self.class.etag(@stat)
   end
 end

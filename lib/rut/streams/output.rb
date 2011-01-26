@@ -12,7 +12,7 @@ module Rut::Streams::Output
     raise Rut::ArgumentError, 'Cannot write a negative number of bytes: %d' % bytes if bytes and bytes < 0
     return 0 if bytes and bytes.zero?
     with_pending do
-      super_write(buffer, bytes)
+      super(buffer, bytes)
     end
   end
 
@@ -24,10 +24,10 @@ module Rut::Streams::Output
           begin
             flush
           rescue
-            super_close rescue nil
+            super rescue nil
             raise
           end
-          super_close
+          super
         end
       ensure
         @closed = true

@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 class Rut::Streams::Outputs::Files::Local::POSIX
-  autoload :Close, 'rut/streams/outputs/files/local/posix/close'
   autoload :Existing, 'rut/streams/outputs/files/local/posix/existing'
-
-  include Rut::Streams::Output
+  autoload :File, 'rut/streams/outputs/files/local/posix/file'
 
   class << self
+=begin
     def append(rut, flags = Rut::Create::None)
       new(Rut::OS.open(rut.path,
                         IO::CREAT | IO::APPEND | IO::WRONLY,
@@ -17,33 +16,33 @@ class Rut::Streams::Outputs::Files::Local::POSIX
     rescue SystemCallError => e
       raise Rut::Error.from(e, 'Error opening file: %s')
     end
+=end
 
     def replace(rut, readable = false, etag = nil, backup = false, flags = Rut::Create::None)
-      new(Rut::OS.open(rut.path,
-                        IO::CREAT | IO::EXCL | (readable ? IO::RDWR : IO::WRONLY),
-                        flags & Rut::Create::Private ? 0600 : 0666),
-          rut.path)
-    rescue Errno::EEXIST
-      existing = Existing.new(rut, readable, etag, backup, flags)
-      new(existing.io, rut.path, const_get(:Close).const_get(:Existing).new(existing))
-    rescue Errno::EINVAL
-      raise Rut::InvalidNameError, 'Invalid filename'
-    rescue SystemCallError => e
-      raise Rut::Error.from(e, 'Error opening file: %s')
+      extended_new(File.new(rut, readable, flags))
+    rescue Rut::ExistsError
+      extended_new(Existing.new(rut, readable, etag, backup, flags))
+    end
+
+  private
+
+    def extended_new(file)
+      new(file).extend(Rut::Streams::Output)
     end
   end
 
-  def initialize(io, path, close = Close::Simple.new(io))
+  def initialize(file)
     super()
-    @io, @path, @close = io, path, close
+    @file = file
+    @etag = nil
   end
 
 private
 
-  def super_write(buffer, bytes = nil)
+  def write(buffer, bytes = nil)
     prefix = bytes.nil? ? buffer : buffer[0...bytes]
     begin
-      @io.syswrite(prefix)
+      @file.write(prefix)
     rescue Errno::EINTR
       retry
     rescue SystemCallError => e
@@ -51,9 +50,9 @@ private
     end
   end
 
-  def super_close
-    @close.call
-  ensure
-    begin @io.close rescue SystemCallError end unless @io.closed?
+  def close
+    @etag = @file.close
+  rescue SystemCallError => e
+    raise Rut::Error.from(e, 'Error closing file: %s')
   end
 end
