@@ -2,7 +2,11 @@
 
 module Rut::Streams::Outputs::Files::Local::POSIX::Instance
   def close
-    Rut::Streams::Outputs::Files::Local::POSIX::File.close(io)
+    stat = io.stat rescue nil
+    io.close
+    stat ? Rut::Info.etag(stat) : nil
+  rescue SystemCallError => e
+    raise Rut::Error.from(e, 'Error closing file: %s')
   end
 
   def try_simple_close

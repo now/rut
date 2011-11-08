@@ -5,14 +5,6 @@ class Rut::Streams::Outputs::Files::Local::POSIX::File
 
   class << self
     # TODO: Move Rut::OS.open here.
-
-    def close(io)
-      stat = io.stat rescue nil
-      io.close
-      stat ? Rut::Info.etag(stat) : nil
-    rescue SystemCallError => e
-      raise Rut::Error.from(e, 'Error closing file: %s')
-    end
   end
 
   def initialize(rut, readable, flags, o_flags = IO::CREAT | IO::EXCL)

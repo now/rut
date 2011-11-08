@@ -9,6 +9,9 @@ module Rut::Streams::Outputs::Files::Local::POSIX::Existing
   class << self
     def new(rut, readable, etag, backup, flags)
       actual = Actual.new(rut, readable || backup, etag, flags)
+      # TODO: make Backup a proper object, create it, pass it to temporary (for
+      # path, then, if temporary wasn’t created and we have backup, create it.
+      # (Or maybe?)
       temporary = Temporary.try_to_create(actual, readable, backup, flags)
       Backup.create actual unless temporary or not backup
       (temporary or

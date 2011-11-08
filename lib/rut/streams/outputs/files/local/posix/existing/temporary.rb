@@ -13,6 +13,7 @@ class Rut::Streams::Outputs::Files::Local::POSIX::Existing::Temporary
     end
   end
 
+  # TODO: backup should be passed in.
   def initialize(rut, flags, readable, backup, flags, stat)
     @actual = rut
     @backup = backup ? Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup.rut(actual) : nil
@@ -24,7 +25,8 @@ class Rut::Streams::Outputs::Files::Local::POSIX::Existing::Temporary
     raise Rut::Error.from(e, 'Error creating temporary file: %s')
   end
 
-  # TODO: super must come before the rearrangement.
+  # TODO: super must come before the rearrangement.  How do we separate these?
+  # Damn it!  I’m sick of this.
   def close
     rearrange_actual_and_temporary
     super
