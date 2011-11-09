@@ -1,22 +1,32 @@
 # -*- coding: utf-8 -*-
 
 class Rut::Streams::Inputs::Files::Local
-  include Rut::Streams::Inputs::File
-
-  def initialize(io)
-    super()
-    @io = io
+  class << self
+    def open(path)
+      begin
+        io = Rut::OS.open(path, IO::RDONLY)
+      rescue SystemCallError => e
+        raise Rut::Error.from(e, 'Error opening file: %s')
+      end
+      if (io.stat.directory? rescue nil)
+        io.close
+        raise Rut::IsDirectoryError, 'Cannot open directory'
+      end
+      new(io, path)
+    end
   end
 
-private
+  def initialize(io, path = nil)
+    @io, @path = io, path
+  end
 
-  def super_close
+  def close
     @io.close
   rescue SystemCallError => e
     raise Rut::Error.from(e, 'Error closing file: %s')
   end
 
-  def super_read(bytes)
+  def read(bytes)
     @io.sysread(bytes)
   rescue EOFError
     ''

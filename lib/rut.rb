@@ -17,7 +17,7 @@ class Rut
     end
 
     def windows?
-      Config::CONFIG['target_os'] == 'mingw32'
+      RbConfig::CONFIG['target_os'] == 'mingw32'
     end
 
   private

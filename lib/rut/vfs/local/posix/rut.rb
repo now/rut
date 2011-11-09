@@ -111,30 +111,21 @@ class Rut::VFS::Local::POSIX::Rut
   end
 
   def read
-    begin
-      io = Rut::OS.open(path, IO::RDONLY)
-    rescue SystemCallError => e
-      raise Rut::Error.from(e, 'Error opening file: %s')
-    end
-    if (io.stat.directory? rescue nil)
-      io.close
-      raise Rut::IsDirectoryError, 'Cannot open directory'
-    end
-    input = Rut::Streams::Inputs::Files::Local.new(io)
+    input = Rut::Streams::Inputs::File.new(Rut::Streams::Inputs::Files::Local.open(path))
     return input unless block_given?
-    begin yield input ensure input.close end
+    begin yield(input) ensure input.close end
   end
 
   def append(flags = Rut::Create::None)
     output = Rut::Streams::Outputs::Files::Local.append(self, flags)
     return output unless block_given?
-    begin yield output ensure output.close end
+    begin yield(output) ensure output.close end
   end
 
   def replace(etag = nil, backup = false, flags = Rut::Create::None)
     output = Rut::Streams::Outputs::Files::Local.replace(self, false, etag, backup, flags)
     return output unless block_given?
-    begin yield output ensure output.close end
+    begin yield(output) ensure output.close end
   end
 
   def mkdir
