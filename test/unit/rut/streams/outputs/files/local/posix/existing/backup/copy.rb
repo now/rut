@@ -40,7 +40,7 @@ end
 Expectations do
   expect 'abc' do
     output = Rut::Test::Output.new
-    Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup::Copy.new Rut::Test::Input.new, output
+    Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup::Copy.new(Rut::Test::Input.new, output).call
     output.contents
   end
 end

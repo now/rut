@@ -6,11 +6,11 @@ module Rut::Streams::Outputs::Files::Local
 
   class << self
     def append(rut, flags = Rut::Create::None)
-      (Rut.windows? ? Windows : POSIX).append(rut, flags)
+      POSIX.append(rut, flags)
     end
 
-    def replace(rut, readable = false, etag = nil, backup = false, flags = Rut::Create::None)
-      (Rut.windows? ? Windows : POSIX).replace(rut, readable, etag, backup, flags)
+    def replace(rut, options = {})
+      (Rut.windows? ? Windows : POSIX).replace(rut, options)
     end
   end
 end

@@ -7,8 +7,8 @@ class Rut::Info
     end
 
     def etag(stat)
-      times = stat.mtime
-      '%lu:%lu' % [time.sec, time.usec]
+      time = stat.mtime
+      '%u:%u' % [time.sec, time.usec]
     end
 
   private

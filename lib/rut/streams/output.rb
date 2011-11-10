@@ -8,43 +8,35 @@ module Rut::Streams::Output
     @closing = false
   end
 
-  def write(buffer, bytes = nil)
-    raise Rut::ArgumentError, 'Cannot write a negative number of bytes: %d' % bytes if bytes and bytes < 0
-    return 0 if bytes and bytes.zero?
-    with_pending do
-      super(buffer, bytes)
-    end
-  end
-
   def close
-    return self if closed?
-    with_pending do
-      begin
-        with_closing do
-          begin
-            flush
-          rescue
-            super rescue nil
-            raise
-          end
-          super
+    super{
+      with_closing do
+        begin
+          flush
+        rescue
+          @base.close rescue nil
+          raise
         end
-      ensure
-        @closed = true
+        @base.close
       end
-    end
-    self
+    }
   end
 
-  def closed?
-    @closed
+  def write(buffer, bytes = nil)
+    raise Rut::ArgumentError,
+      'cannot write a negative number of bytes: %d' % bytes if bytes and bytes < 0
+    return 0 if bytes and bytes.zero?
+    with_pending{ @base.write(buffer, bytes }
   end
 
   def flush
+    @base.flush
   end
+
+  private
 
   def with_closing
     @closing = true
-    begin yield self ensure @closing = false end
+    begin yield(self) ensure @closing = false end
   end
 end

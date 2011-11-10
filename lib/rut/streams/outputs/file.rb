@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-class Rut::Streams::Inputs::File
-  include Rut::Streams::Input
+class Rut::Streams::Outputs::File
+  include Rut::Streams::Output
 
   def initialize(file)
     super()
