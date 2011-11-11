@@ -3,7 +3,7 @@
 class Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup
   class << self
     def prepare(actual, options = {})
-      options[:backup] ? new(rut(actual.rut), actual.io, actual.stat) : nil
+      options[:backup] ? new(rut(actual.rut), actual.io, actual.stat) : Nil.new
     end
 
     private
@@ -25,6 +25,15 @@ class Rut::Streams::Outputs::Files::Local::POSIX::Existing::Backup
   attr_reader :rut
 
   private
+
+  class Nil
+    def call
+    end
+
+    def rut
+      nil
+    end
+  end
 
   def create_backup
     @rut.delete_if_exists

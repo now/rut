@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
 module Rut::Streams::Outputs
-  autoload :Files, 'rut/streams/outputs/files'
+  require_relative 'outputs/file.rb'
+  require_relative 'outputs/files.rb'
 end

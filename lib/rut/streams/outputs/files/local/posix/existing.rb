@@ -17,16 +17,14 @@ class Rut::Streams::Outputs::Files::Local::POSIX::Existing
 
     private
 
-    # TODO: Clean up backup handling.  This is a bit messy
     def create_temporary(actual, options)
       backup = Backup.prepare(actual, options)
-      backup.call if backup unless temporary = try_create_temporary(actual, backup, options)
-      temporary
+      try_create_temporary(actual, backup, options) or (backup.call; nil)
     end
 
     def try_create_temporary(actual, backup, options = {})
       return nil unless options[:replace] or (actual.stat.nlink < 2 and not actual.symlink?)
-      new(actual.rut, actual.stat, backup && backup.rut, options).tap{ actual.try_close }
+      new(actual.rut, actual.stat, backup.rut, options).tap{ actual.try_close }
     rescue Rut::Error
       nil
     end
@@ -146,6 +144,7 @@ class Rut::Streams::Outputs::Files::Local::POSIX::Existing
 
     private
 
+    # TODO: This should be moved to Backup.
     def move_actual_to_backup
       return unless @backup
       delete_backup

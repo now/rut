@@ -123,9 +123,7 @@ class Rut::VFS::Local::POSIX::Rut
   end
 
   def replace(options = {})
-    #etag = nil, backup = false, flags = Rut::Create::None)
-    output = Rut::Streams::Outputs::Files::Local.replace(self, options)
-    #false, etag, backup, flags)
+    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local.replace(self, options))
     return output unless block_given?
     begin yield(output) ensure output.close end
   end

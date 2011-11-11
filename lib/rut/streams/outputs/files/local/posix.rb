@@ -32,6 +32,9 @@ class Rut::Streams::Outputs::Files::Local::POSIX
     end
   end
 
+  def flush
+  end
+
   def close
     @etag = @file.close
   rescue SystemCallError => e
