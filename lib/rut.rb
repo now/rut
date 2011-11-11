@@ -2,7 +2,6 @@
 
 class Rut
   autoload :Copy, 'rut/copy'
-  autoload :Create, 'rut/create'
   autoload :Info, 'rut/info'
   autoload :OS, 'rut/os'
   autoload :Stream, 'rut/stream'

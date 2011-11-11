@@ -24,7 +24,7 @@ module Rut::VFS::Rut
     raise Rut::NotSupportedError, 'Read not supported'
   end
 
-  def replace(etag = nil, backup = false, flags = Rut::Create::None)
+  def replace(options = {})
     raise Rut::NotSupportedError, 'Replace not supported'
   end
 
