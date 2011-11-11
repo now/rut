@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 class Rut
-  autoload :Copy, 'rut/copy'
   autoload :Info, 'rut/info'
   autoload :OS, 'rut/os'
   autoload :Stream, 'rut/stream'

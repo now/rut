@@ -9,8 +9,8 @@ module Rut::VFS::Rut
     raise Rut::NotSupportedError, 'Info not supported'
   end
 
-  def copy(destination, flags = Rut::Copy::None)
-    if flags & Rut::Copy::DoNotFollowSymlinks and info.symlink?
+  def copy(destination, options = {})
+    if not options.fetch(:follow, true) and info.symlink?
       destination.make_symlink info.target
     elsif info.special?
       # FIXME: could try to recreate device nodes and others?
