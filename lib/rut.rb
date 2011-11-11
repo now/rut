@@ -17,17 +17,7 @@ class Rut
     def windows?
       RbConfig::CONFIG['target_os'] == 'mingw32'
     end
-
-  private
-
-    def def_enum(enum, *names)
-      modul = const_set(enum, Module.new)
-      names.each_with_index do |name, index|
-        modul.const_set name, 1 << index - 1
-      end
-      modul
-    end
   end
 
-  require 'rut/error'
+  require_relative 'rut/error.rb'
 end

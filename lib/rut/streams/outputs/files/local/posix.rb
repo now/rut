@@ -5,6 +5,10 @@ class Rut::Streams::Outputs::Files::Local::POSIX
   require_relative 'posix/file.rb'
 
   class << self
+    def create(rut, options = {})
+      new(File.create(rut, options))
+    end
+
     def append(rut, options = {})
       new(File.append(rut, options))
     end

@@ -116,14 +116,20 @@ class Rut::VFS::Local::POSIX::Rut
     begin yield(input) ensure input.close end
   end
 
+  def create(options = {})
+    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local::POSIX.create(self, options))
+    return output unless block_given?
+    begin yield(output) ensure output.close end
+  end
+
   def append(options = {})
-    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local.append(self, options))
+    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local::POSIX.append(self, options))
     return output unless block_given?
     begin yield(output) ensure output.close end
   end
 
   def replace(options = {})
-    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local.replace(self, options))
+    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local::POSIX.replace(self, options))
     return output unless block_given?
     begin yield(output) ensure output.close end
   end

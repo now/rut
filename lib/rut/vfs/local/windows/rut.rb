@@ -21,4 +21,10 @@ class Rut::VFS::Local::Windows::Rut < Rut::VFS::Local::POSIX::Rut
     # TODO: I don’t know why we would need this test.
     # return $1 if windows? and path =~ %r{\A[a-z]:.*?([^/\\]+)\z}i
   end
+
+  def replace(options = {})
+    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local::Windows.replace(self, options))
+    return output unless block_given?
+    begin yield(output) ensure output.close end
+  end
 end
