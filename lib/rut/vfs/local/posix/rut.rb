@@ -116,8 +116,8 @@ class Rut::VFS::Local::POSIX::Rut
     begin yield(input) ensure input.close end
   end
 
-  def append(flags = Rut::Create::None)
-    output = Rut::Streams::Outputs::Files::Local.append(self, flags)
+  def append(options = {})
+    output = Rut::Streams::Outputs::File.new(Rut::Streams::Outputs::Files::Local.append(self, options))
     return output unless block_given?
     begin yield(output) ensure output.close end
   end

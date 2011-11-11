@@ -5,8 +5,8 @@ module Rut::Streams::Outputs::Files::Local
   autoload :Windows, 'rut/streams/outputs/files/local/windows'
 
   class << self
-    def append(rut, flags = Rut::Create::None)
-      POSIX.append(rut, flags)
+    def append(rut, options = {})
+      POSIX.append(rut, options)
     end
 
     def replace(rut, options = {})
